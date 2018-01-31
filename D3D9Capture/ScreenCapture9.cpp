@@ -11,7 +11,7 @@ ScreenCapture9::~ScreenCapture9()
 {
 }
 
-HRESULT	ScreenCapture9::InitD3D()
+HRESULT	ScreenCapture9::InitD3D(HWND hWnd)
 {
 	D3DDISPLAYMODE	ddm;
 	D3DPRESENT_PARAMETERS	d3dpp;
@@ -37,15 +37,17 @@ HRESULT	ScreenCapture9::InitD3D()
 	d3dpp.BackBufferWidth = gScreenRect.right = ddm.Width;
 	d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	d3dpp.hDeviceWindow = NULL;
+	d3dpp.hDeviceWindow = hWnd;
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
 	d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 
-	if (FAILED(g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, NULL, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &g_pd3dDevice)))
+	if (FAILED(g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &g_pd3dDevice)))
 	{
 		printf_s("Unable to Create Device\n");
 		return E_FAIL;
 	}
+
+	ghWnd = hWnd;
 
 	if (FAILED(g_pd3dDevice->CreateOffscreenPlainSurface(ddm.Width, ddm.Height, D3DFMT_A8R8G8B8, D3DPOOL_SCRATCH, &g_pSurface, NULL)))
 	{
@@ -142,7 +144,7 @@ HRESULT ScreenCapture9::Reset()
 	d3dpp.BackBufferWidth = gScreenRect.right = ddm.Width;
 	d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	d3dpp.hDeviceWindow = NULL;
+	d3dpp.hDeviceWindow = ghWnd;
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
 	d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 
